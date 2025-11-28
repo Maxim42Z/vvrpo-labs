@@ -1,58 +1,85 @@
 package com.library;
 
+import java.util.Scanner;
+
 /**
- * Главный класс для демонстрации работы библиотечной системы
+ * Главный класс для демонстрации работы библиотечной системы после рефакторинга
+ * РЕФАКТОРИНГ: Добавлен класс-репозиторий
+ * @version 2.0
  */
 public class Main {
-    /**
-     * Точка входа в программу
-     * @param args аргументы командной строки
-     */
+    private static Scanner scanner = new Scanner(System.in);
+    // РЕФАКТОРИНГ: Создаем экземпляр репозитория
+    private static LibraryRepository repository = new LibraryRepository();
+    private static Library library = new Library("Главная библиотека");
+    
     public static void main(String[] args) {
-        Library lib1 = new Library("Первая");
-        Library lib2 = new Library("Вторая");
-
+        // Создаем начальные данные
+        createInitialData();
+        
+        // Демонстрация работы Library (поиск и фильтрация)
+        demonstrateLibraryOperations();
+        
+        // Демонстрация работы Repository
+        demonstrateRepositoryOperations();
+        
+        scanner.close();
+    }
+    
+    /**
+     * Создает начальные данные
+     * РЕФАКТОРИНГ: Добавляем данные и в Library и в Repository для демонстрации
+     */
+    private static void createInitialData() {
+        // Создаем книги
         Book book1 = new Book("Репка", "А.Н. Толстой", 1863);
         Book book2 = new Book("Курочка Ряба", "А.Н. Афанасьев", 1864);
-        Book book3 = new Book("Теремок", "А.Н. Толстой", 1867);
-        Book book4 = new Book("Лиса и Заяц", "А.Н. Афанасьев", 1873);
-        Book book5 = new Book("Волк и козлята", "А.Н. Толстой", 1856);
-        Book book6 = new Book("Гуси-лебеди", "А.Н. Афанасьев", 1871);
-        Book book7 = new Book("Колобок", "Я", 2024);
-
-        Magazine magazine1 = new Magazine("Трансформеры", 2012, 9);
-        Magazine magazine2 = new Magazine("Настоящие насекомые", 2010, 14);
-
-        lib1.addBook(book1);
-        lib1.addBook(book3);
-        lib1.addBook(book4);
-        lib1.addBook(book7);
-
-        lib2.addBook(book2);
-        lib2.addBook(book5);
-        lib2.addBook(book6);
-
-        lib1.addMagazine(magazine1);
-        lib1.addMagazine(magazine2);
-
-        System.out.println("Книги А.Н. Толстого в " + lib1.getName() + ":");
-        for (Book book : lib1.getBooksByAuthor("А.Н. Толстой")) {
+        
+        // РЕФАКТОРИНГ: Добавляем в репозиторий (новый функционал)
+        repository.addItem(book1);
+        repository.addItem(book2);
+        
+        // Добавляем в Library (старый функционал)
+        library.addBook(book1);
+        library.addBook(book2);
+    }
+    
+    /**
+     * Демонстрирует операции через класс Library
+     * РЕФАКТОРИНГ: Используем старый функционал поиска
+     */
+    private static void demonstrateLibraryOperations() {
+        System.out.println("\nОПЕРАЦИИ ПОИСКА");
+        
+        System.out.println(library);
+        
+        System.out.println("\nКниги А.Н. Толстого:");
+        for (Book book : library.getBooksByAuthor("А.Н. Толстой")) {
             System.out.println("  " + book);
         }
-
-        System.out.println("\nКниги А.Н. Афанасьева в " + lib2.getName() + ":");
-        for (Book book : lib2.getBooksByAuthor("А.Н. Афанасьев")) {
-            System.out.println("  " + book);
+    }
+    
+    /**
+     * Демонстрирует операции через репозиторий
+     * РЕФАКТОРИНГ: Новый функционал управления данными
+     */
+    private static void demonstrateRepositoryOperations() {        
+        // Операция ДОБАВЛЕНИЯ
+        System.out.println("\nОПЕРАЦИЯ ДОБАВЛЕНИЯ:");
+        Book newBook = new Book("Новая книга", "Новый автор", 2024);
+        repository.addItem(newBook);
+        System.out.println("Добавлено: " + newBook);
+        
+        // Операция УДАЛЕНИЯ
+        System.out.println("\nОПЕРАЦИЯ УДАЛЕНИЯ:");
+        boolean removed = repository.removeItem(0);
+        if (removed) {
+            System.out.println("Элемент с индексом 0 удален");
         }
-
-        System.out.println("\nВсе книги в библиотеках:");
-        System.out.println(lib1);
-        for (Book book : lib1.getBooks()) {
-            System.out.println("  " + book);
-        }
-        System.out.println(lib2);
-        for (Book book : lib2.getBooks()) {
-            System.out.println("  " + book);
+        
+        System.out.println("\nФинальное состояние репозитория:");
+        for (LibraryItem item : repository.getAllItems()) {
+            System.out.println("  " + item);
         }
     }
 }
